@@ -1,3 +1,4 @@
+require('dotenv').config();
 const sequelize = require('./db');
 const createError = require('http-errors');
 const express = require('express');
