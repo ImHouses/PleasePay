@@ -1,6 +1,5 @@
 package com.juancasasm.datarepositories.users
 
-import com.juancasasm.DbSettings
 import com.juancasasm.models.User
 import com.juancasasm.models.dao.Users
 import org.jetbrains.exposed.sql.*
@@ -58,6 +57,19 @@ class UserRepository {
     }
 
     suspend fun updateUser(fields: Map<String, *>): User? = dbQuery {
-        null
+        require(!(!fields.containsKey("username") || !fields.containsKey("first_name") || !fields.containsKey("last_name")
+                || !fields.containsKey("gender") || !fields.containsKey("birth_date") || !fields.containsKey("email")
+                || !fields.containsKey("id"))
+        ) { "Invalid fields parameter" }
+        Users.update({Users.id eq fields["id"] as Int}) {
+            it[username] = fields["username"] as String
+            it[firstName] = fields["first_name"] as String
+            it[lastName] = fields["last_name"] as String
+            it[gender] = fields["gender"] as String
+            it[birthDate] = fields["birth_date"] as DateTime
+            it[email] = fields["email"] as String
+            it[profilePhotoUrl] = fields["profile_photo_url"] as? String
+        }
+        fromTransactionSingle(Users.select { Users.id eq fields["id"] as Int}.singleOrNull())
     }
 }

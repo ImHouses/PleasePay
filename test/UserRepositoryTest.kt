@@ -73,8 +73,12 @@ class UserRepositoryTest {
             fields["email"] = "${Generators.generateRandomString(5)}@gmail.com"
             repository.updateUser(fields)
         }
+        assertFails {
+            repository.updateUser(fields)
+        }
         fields = generateRandomUser() as MutableMap<String, Any>
-        val createdUser = repository.updateUser(fields) ?: fail()
+        val createdUser = repository.createUser(fields) ?: fail()
+        fields["id"] = createdUser.id as Any
         fields["first_name"] = Generators.generateRandomString(6)
         var updatedUser = repository.updateUser(fields) ?: fail()
         assertNotEquals(createdUser.firstName, updatedUser.firstName)
